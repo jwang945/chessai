@@ -16,7 +16,7 @@ function onDragStart (source, piece) {
 }
 
 function getSmartMove(game, color, currSum){
-	var [bestMove, bestMoveValue] = miniMax(game, 8, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true, currSum, color);
+	var [bestMove, bestMoveValue] = miniMax(game, 3, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true, currSum, color);
 	return [bestMove, bestMoveValue];
 }
 function makeSmartMove(color){
