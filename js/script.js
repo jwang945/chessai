@@ -204,39 +204,46 @@ function evaluateBoard (move, prevSum, color) {
 function miniMax(game, depth, isMaximizingPlayer, prevSum, color){
 	var childBoards = game.moves(); //gets all possible moves from currBoard, is a list of all possible moves
 	// Maximum depth exceeded or node is a terminal node (no children)
-    if (depth === 0 || children.length === 0)
-    {
+    if (depth === 0 || children.length === 0){
         return [null, prevSum]
     }
 
-    //since we're minmaxing, start the best min and max vals at highest and lowest possible
+    //since we're minmaxing, start the min and max vals at highest and lowest possible
     var maxVal = Number.NEGATIVE_INFINITY;
     var minVal = Number.POSITIVE_INFINITY;
     var bestMove;
     var currMove;
     //loop through all children to find the bestmove, the one that gets minVal loweset and maxVal highest
     for (var i = 0; i < childBoards.length; i++){
-    	currMove = childBoards[i];
+    	currMove = childBoards[i]; //currMove ex: 'Nd4', no additional information
     	//change currMove into a Move object with extra information to pass into evaluateBoard func
     	currMoveObj = game.move(currMove);
+
     	var newSum = evaluateBoard(currMoveObj, prevSum, color);
     	//recurse down to see how much potential this new move has
-    	var [childBestMove, childValue] = minimax(game, depth - 1, !isMaximizingPlayer, newSum, color);
+    	var [childBestMove, childValue] = miniMax(game, depth - 1, !isMaximizingPlayer, newSum, color);
 
-    	game.undo();
+    	game.undo(); //because we call game.move() above to test the move, but we don't actually want to play it
 
+    	//can then just use if else to determine if best move because chess is a zero-sum game
     	if (isMaximizingPlayer){
             if (childValue > maxValue){
                 maxValue = childValue;
-                bestMove = currPrettyMove;
+                bestMove = currMoveObj;
             }
         }
         else{
             if (childValue < minValue){
                 minValue = childValue;
-                bestMove = currPrettyMove;
+                bestMove = currMoveObj;
             }
         }
+    }
+    if (isMaximizingPlayer){
+        return [bestMove, maxValue]
+    }
+    else{
+        return [bestMove, minValue];
     }
 }
 var config = {
