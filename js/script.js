@@ -16,7 +16,7 @@ function onDragStart (source, piece) {
 }
 
 function getSmartMove(game, color, currSum){
-	var [bestMove, bestMoveValue] = miniMax(game, 3, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true, currSum, color);
+	var [bestMove, bestMoveValue] = miniMax(game, 8, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true, currSum, color);
 	return [bestMove, bestMoveValue];
 }
 function makeSmartMove(color){
@@ -213,7 +213,11 @@ function evaluateBoard (move, prevSum, color) {
 }
 function miniMax(game, depth, alpha, beta, isMaximizingPlayer, prevSum, color){
 	var childBoards = game.ugly_moves({verbose: true}); //gets all possible moves from currBoard, is a list of all possible moves
-	// Maximum depth exceeded or node is a terminal node (no children)
+
+	//sort randomly so that it's less boring
+	childBoards.sort(function(a, b){return 0.5 - Math.random()});
+
+	// Maximum depth exceeded or node is a terminal node (no children), end condition
     if (depth === 0 || childBoards.length === 0){
         return [null, prevSum]
     }
@@ -227,7 +231,7 @@ function miniMax(game, depth, alpha, beta, isMaximizingPlayer, prevSum, color){
     for (var i = 0; i < childBoards.length; i++){
     	currMove = childBoards[i]; //currMove ex: 'Nd4', no additional information
     	//change currMove into a Move object with extra information to pass into evaluateBoard func
-    	var currMoveObj = game.ugly_move(currMove);z
+    	var currMoveObj = game.ugly_move(currMove);
     	var newSum = evaluateBoard(currMoveObj, prevSum, color);
     	//recurse down to see how much potential this new move has
     	var [childBestMove, childValue] = miniMax(game, depth - 1, alpha, beta, !isMaximizingPlayer, newSum, color);
