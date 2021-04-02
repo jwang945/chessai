@@ -227,7 +227,7 @@ function miniMax(game, depth, alpha, beta, isMaximizingPlayer, prevSum, color){
     for (var i = 0; i < childBoards.length; i++){
     	currMove = childBoards[i]; //currMove ex: 'Nd4', no additional information
     	//change currMove into a Move object with extra information to pass into evaluateBoard func
-    	var currMoveObj = game.ugly_move(currMove);
+    	var currMoveObj = game.ugly_move(currMove);z
     	var newSum = evaluateBoard(currMoveObj, prevSum, color);
     	//recurse down to see how much potential this new move has
     	var [childBestMove, childValue] = miniMax(game, depth - 1, alpha, beta, !isMaximizingPlayer, newSum, color);
