@@ -1,10 +1,13 @@
 // NOTE: this example uses the chess.js library:
 // https://github.com/jhlywa/chess.js
 
+//currDebugNotes:
+//right now the bestMove is wrong, it's an illegal move, somehow being returned by miniMax
 var board = null
 var game = new Chess()
+var globalSum = 0;
 
-function onDragStart (source, piece, position, orientation) {
+function onDragStart (source, piece) {
   // do not pick up pieces if the game is over
   if (game.game_over()) return false
 
@@ -12,17 +15,24 @@ function onDragStart (source, piece, position, orientation) {
   if (piece.search(/^b/) !== -1) return false
 }
 
-function makeRandomMove () {
-  var possibleMoves = game.moves()
-
-  // game over
-  if (possibleMoves.length === 0) return
-
-  var randomIdx = Math.floor(Math.random() * possibleMoves.length)
-  game.move(possibleMoves[randomIdx])
-  board.position(game.fen())
+function getSmartMove(game, color, currSum){
+	var [bestMove, bestMoveValue] = miniMax(game, 3, true, currSum, color);
+	console.log(bestMove);
+	return [bestMove, bestMoveValue];
 }
-
+function makeSmartMove(color){
+	if (color === 'b')
+    {
+        var move = getSmartMove(game, color, globalSum)[0];
+    }
+    else
+    {
+        var move = getSmartMove(game, color, -globalSum)[0];
+    }
+    globalSum = evaluateBoard(move, globalSum, 'b');
+    game.move(move);
+    board.position(game.fen());
+}
 function onDrop (source, target) {
   // see if the move is legal
   var move = game.move({
@@ -35,7 +45,8 @@ function onDrop (source, target) {
   if (move === null) return 'snapback'
 
   // make random legal move for black
-  window.setTimeout(makeRandomMove, 250)
+  //window.setTimeout(makeSmartMove('b'), 1000)
+  makeSmartMove('b')
 }
 
 // update the board position after the piece snap
@@ -198,13 +209,13 @@ function evaluateBoard (move, prevSum, color) {
             prevSum += pstSelf[move.color][move.piece][to[0]][to[1]];
         }
     }
-
+    
     return prevSum;
 }
 function miniMax(game, depth, isMaximizingPlayer, prevSum, color){
 	var childBoards = game.moves(); //gets all possible moves from currBoard, is a list of all possible moves
 	// Maximum depth exceeded or node is a terminal node (no children)
-    if (depth === 0 || children.length === 0){
+    if (depth === 0 || childBoards.length === 0){
         return [null, prevSum]
     }
 
@@ -218,32 +229,33 @@ function miniMax(game, depth, isMaximizingPlayer, prevSum, color){
     	currMove = childBoards[i]; //currMove ex: 'Nd4', no additional information
     	//change currMove into a Move object with extra information to pass into evaluateBoard func
     	currMoveObj = game.move(currMove);
-
     	var newSum = evaluateBoard(currMoveObj, prevSum, color);
+    	if (currMoveObj.from )
+    	console.log(currMoveObj)
+    	console.log(depth)
     	//recurse down to see how much potential this new move has
     	var [childBestMove, childValue] = miniMax(game, depth - 1, !isMaximizingPlayer, newSum, color);
-
     	game.undo(); //because we call game.move() above to test the move, but we don't actually want to play it
 
     	//can then just use if else to determine if best move because chess is a zero-sum game
     	if (isMaximizingPlayer){
-            if (childValue > maxValue){
-                maxValue = childValue;
+            if (childValue > maxVal){
+                maxVal = childValue;
                 bestMove = currMoveObj;
             }
         }
         else{
-            if (childValue < minValue){
-                minValue = childValue;
+            if (childValue < minVal){
+                minVal = childValue;
                 bestMove = currMoveObj;
             }
         }
     }
     if (isMaximizingPlayer){
-        return [bestMove, maxValue]
+        return [bestMove, maxVal]
     }
     else{
-        return [bestMove, minValue];
+        return [bestMove, minVal];
     }
 }
 var config = {
