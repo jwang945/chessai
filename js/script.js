@@ -16,7 +16,7 @@ function onDragStart (source, piece) {
 }
 
 function getSmartMove(game, color, currSum){
-	var [bestMove, bestMoveValue] = miniMax(game, 3, true, currSum, color);
+	var [bestMove, bestMoveValue] = miniMax(game, 3, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, true, currSum, color);
 	return [bestMove, bestMoveValue];
 }
 function makeSmartMove(color){
@@ -211,7 +211,7 @@ function evaluateBoard (move, prevSum, color) {
     
     return prevSum;
 }
-function miniMax(game, depth, isMaximizingPlayer, prevSum, color){
+function miniMax(game, depth, alpha, beta, isMaximizingPlayer, prevSum, color){
 	var childBoards = game.moves(); //gets all possible moves from currBoard, is a list of all possible moves
 	// Maximum depth exceeded or node is a terminal node (no children)
     if (depth === 0 || childBoards.length === 0){
@@ -230,7 +230,7 @@ function miniMax(game, depth, isMaximizingPlayer, prevSum, color){
     	var currMoveObj = game.move(currMove);
     	var newSum = evaluateBoard(currMoveObj, prevSum, color);
     	//recurse down to see how much potential this new move has
-    	var [childBestMove, childValue] = miniMax(game, depth - 1, !isMaximizingPlayer, newSum, color);
+    	var [childBestMove, childValue] = miniMax(game, depth - 1, alpha, beta, !isMaximizingPlayer, newSum, color);
     	game.undo(); //because we call game.move() above to test the move, but we don't actually want to play it
 
     	//can then just use if else to determine if best move because chess is a zero-sum game
@@ -239,12 +239,22 @@ function miniMax(game, depth, isMaximizingPlayer, prevSum, color){
                 maxVal = childValue;
                 bestMove = currMoveObj;
             }
+            if (childValue > alpha){
+                alpha = childValue;
+            }
         }
         else{
             if (childValue < minVal){
                 minVal = childValue;
                 bestMove = currMoveObj;
             }
+            if (childValue < beta){
+                beta = childValue;
+            }
+        }
+        // Alpha-beta pruning
+        if (alpha >= beta){
+            break;
         }
     }
     if (isMaximizingPlayer){
