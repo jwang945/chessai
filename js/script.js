@@ -17,7 +17,6 @@ function onDragStart (source, piece) {
 
 function getSmartMove(game, color, currSum){
 	var [bestMove, bestMoveValue] = miniMax(game, 3, true, currSum, color);
-	console.log(bestMove);
 	return [bestMove, bestMoveValue];
 }
 function makeSmartMove(color){
@@ -235,9 +234,6 @@ function miniMax(game, depth, isMaximizingPlayer, prevSum, color){
     	game.undo(); //because we call game.move() above to test the move, but we don't actually want to play it
 
     	//can then just use if else to determine if best move because chess is a zero-sum game
-    	if(depth == 3){
-    		console.log(currMoveObj)
-    	}
     	if (isMaximizingPlayer){
             if (childValue > maxVal){
                 maxVal = childValue;
