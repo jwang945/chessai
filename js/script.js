@@ -228,16 +228,16 @@ function miniMax(game, depth, isMaximizingPlayer, prevSum, color){
     for (var i = 0; i < childBoards.length; i++){
     	currMove = childBoards[i]; //currMove ex: 'Nd4', no additional information
     	//change currMove into a Move object with extra information to pass into evaluateBoard func
-    	currMoveObj = game.move(currMove);
+    	var currMoveObj = game.move(currMove);
     	var newSum = evaluateBoard(currMoveObj, prevSum, color);
-    	if (currMoveObj.from )
-    	console.log(currMoveObj)
-    	console.log(depth)
     	//recurse down to see how much potential this new move has
     	var [childBestMove, childValue] = miniMax(game, depth - 1, !isMaximizingPlayer, newSum, color);
     	game.undo(); //because we call game.move() above to test the move, but we don't actually want to play it
 
     	//can then just use if else to determine if best move because chess is a zero-sum game
+    	if(depth == 3){
+    		console.log(currMoveObj)
+    	}
     	if (isMaximizingPlayer){
             if (childValue > maxVal){
                 maxVal = childValue;
