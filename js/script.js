@@ -212,7 +212,7 @@ function evaluateBoard (move, prevSum, color) {
     return prevSum;
 }
 function miniMax(game, depth, alpha, beta, isMaximizingPlayer, prevSum, color){
-	var childBoards = game.moves(); //gets all possible moves from currBoard, is a list of all possible moves
+	var childBoards = game.ugly_moves({verbose: true}); //gets all possible moves from currBoard, is a list of all possible moves
 	// Maximum depth exceeded or node is a terminal node (no children)
     if (depth === 0 || childBoards.length === 0){
         return [null, prevSum]
@@ -227,7 +227,7 @@ function miniMax(game, depth, alpha, beta, isMaximizingPlayer, prevSum, color){
     for (var i = 0; i < childBoards.length; i++){
     	currMove = childBoards[i]; //currMove ex: 'Nd4', no additional information
     	//change currMove into a Move object with extra information to pass into evaluateBoard func
-    	var currMoveObj = game.move(currMove);
+    	var currMoveObj = game.ugly_move(currMove);
     	var newSum = evaluateBoard(currMoveObj, prevSum, color);
     	//recurse down to see how much potential this new move has
     	var [childBestMove, childValue] = miniMax(game, depth - 1, alpha, beta, !isMaximizingPlayer, newSum, color);
